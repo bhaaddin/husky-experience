@@ -1,0 +1,172 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid()) @db.Uuid
+  email         String    @unique @db.VarChar(255)
+  passwordHash  String    @map("password_hash") @db.VarChar(255)
+  name          String?   @db.VarChar(255)
+  role          String    @default("user") @db.VarChar(50)
+  emailVerified Boolean   @default(false) @map("email_verified")
+  phone         String?   @db.VarChar(50)
+  image         String?
+  bookings      Booking[]
+  blogPosts     BlogPost[]
+  activityLogs  ActivityLog[]
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Dog {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String   @db.VarChar(100)
+  age          Int
+  breed        String   @default("Siberian Husky") @db.VarChar(100)
+  personality  String?  @db.Text
+  funFact      String?  @map("fun_fact") @db.Text
+  bio          String?  @db.Text
+  imageUrl     String?  @map("image_url") @db.Text
+  imageAlt     String?  @map("image_alt") @db.VarChar(255)
+  featured     Boolean  @default(false)
+  displayOrder Int      @default(0) @map("display_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("dogs")
+}
+
+model Package {
+  id               String   @id @default(uuid()) @db.Uuid
+  name             String   @db.VarChar(255)
+  slug             String   @unique @db.VarChar(255)
+  description      String?  @db.Text
+  durationMinutes  Int      @map("duration_minutes")
+  priceCents       Int      @map("price_cents")
+  depositPercentage Int     @default(50) @map("deposit_percentage")
+  maxParticipants  Int      @default(4) @map("max_participants")
+  featured         Boolean  @default(false)
+  includes         Json?
+  requirements     String?  @db.Text
+  imageUrl         String?  @map("image_url") @db.Text
+  displayOrder     Int      @default(0) @map("display_order")
+  isActive         Boolean  @default(true) @map("is_active")
+  bookings         Booking[]
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@map("packages")
+}
+
+model Booking {
+  id                String   @id @default(uuid()) @db.Uuid
+  bookingReference  String   @unique @map("booking_reference") @db.VarChar(50)
+  userId            String?  @map("user_id") @db.Uuid
+  user              User?    @relation(fields: [userId], references: [id])
+  packageId         String   @map("package_id") @db.Uuid
+  package           Package  @relation(fields: [packageId], references: [id])
+  bookingDate       DateTime @map("booking_date") @db.Date
+  startTime         DateTime @map("start_time") @db.Time()
+  endTime           DateTime @map("end_time") @db.Time()
+  numParticipants   Int      @default(1) @map("num_participants")
+  totalPriceCents   Int      @map("total_price_cents")
+  depositPaidCents  Int?     @map("deposit_paid_cents")
+  remainingCents    Int?     @map("remaining_cents")
+  status            String   @default("pending") @db.VarChar(50)
+  specialRequirements String? @map("special_requirements") @db.Text
+  paymentIntentId   String?  @map("payment_intent_id") @db.VarChar(255)
+  notes             String?  @db.Text
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@map("bookings")
+}
+
+model BlogPost {
+  id              String    @id @default(uuid()) @db.Uuid
+  title           String    @db.VarChar(255)
+  slug            String    @unique @db.VarChar(255)
+  excerpt         String?   @db.Text
+  content         String    @db.Text
+  featuredImage   String?   @map("featured_image") @db.Text
+  imageAlt        String?   @map("image_alt") @db.VarChar(255)
+  authorId        String?   @map("author_id") @db.Uuid
+  author          User?     @relation(fields: [authorId], references: [id])
+  status          String    @default("draft") @db.VarChar(50)
+  publishedAt     DateTime? @map("published_at")
+  views           Int       @default(0)
+  tags            String[]
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@map("blog_posts")
+}
+
+model GalleryImage {
+  id           String   @id @default(uuid()) @db.Uuid
+  title        String?  @db.VarChar(255)
+  description  String?  @db.Text
+  imageUrl     String   @map("image_url") @db.Text
+  imageAlt     String?  @map("image_alt") @db.VarChar(255)
+  category     String?  @db.VarChar(100)
+  tags         String[]
+  featured     Boolean  @default(false)
+  displayOrder Int      @default(0) @map("display_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("gallery_images")
+}
+
+model Testimonial {
+  id          String   @id @default(uuid()) @db.Uuid
+  clientName  String   @map("client_name") @db.VarChar(255)
+  clientImage String?  @map("client_image") @db.Text
+  content     String   @db.Text
+  rating      Int
+  approved    Boolean  @default(false)
+  featured    Boolean  @default(false)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("testimonials")
+}
+
+model Setting {
+  id          String   @id @default(uuid()) @db.Uuid
+  key         String   @unique @db.VarChar(255)
+  value       Json?
+  description String?  @db.Text
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("settings")
+}
+
+model Subscription {
+  id         String   @id @default(uuid()) @db.Uuid
+  email      String   @unique @db.VarChar(255)
+  subscribed Boolean  @default(true)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("subscriptions")
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @map("user_id") @db.Uuid
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String   @db.VarChar(255)
+  details   Json?
+  ipAddress String?  @map("ip_address") @db.VarChar(50)
+  userAgent String?  @map("user_agent") @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("activity_logs")
+}
