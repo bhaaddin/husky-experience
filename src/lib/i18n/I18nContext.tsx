@@ -4,10 +4,6 @@ import { createContext, useContext, useState, useEffect } from 'react';
 
 type Locale = 'en' | 'cs';
 
-interface Translation {
-  [key: string]: any;
-}
-
 const I18nContext = createContext<{ locale: 'en' | 'cs'; setLocale: (l: 'en' | 'cs') => void; t: (p: string) => string } | undefined>(undefined);
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
@@ -41,10 +37,9 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useTranslation() {
-  const context = require('./I18nContext').I18nContext;
-  const contextValue = useContext(context);
-  if (!contextValue) {
+  const context = useContext(I18nContext);
+  if (!context) {
     throw new Error('useTranslation must be used within an I18nProvider');
   }
-  return contextValue;
+  return context;
 }
