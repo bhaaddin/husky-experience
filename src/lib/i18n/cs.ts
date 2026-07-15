@@ -1,4 +1,4 @@
-export const cs = {
+export default {
   nav: {
     home: 'Domů',
     about: 'O nás',

@@ -1,4 +1,4 @@
-export const en = {
+export default {
   nav: {
     home: 'Home',
     about: 'About',
