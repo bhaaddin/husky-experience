@@ -35,8 +35,7 @@ export function LanguageSwitcher() {
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
-        <Globe className="h-4 w-4" />
-        <span className="hidden sm:inline">{localeFlags[locale]}</span>
+        <span className="text-lg">{localeFlags[locale]}</span>
         <span className="hidden sm:inline font-medium">{localeNames[locale]}</span>
         <ChevronDown className={cn('h-4 w-4 transition-transform', isOpen && 'rotate-180')} />
       </Button>

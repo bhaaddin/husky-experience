@@ -11,18 +11,3 @@ export const localeFlags: Record<Locale, string> = {
   en: '🇬🇧',
   cs: '🇨🇿',
 };
-
-// Import translation files
-import enTranslations from './en';
-import csTranslations from './cs';
-
-const translations = {
-  en: enTranslations,
-  cs: csTranslations,
-};
-
-export function getTranslation(locale: Locale) {
-  return translations[locale] || translations[defaultLocale];
-}
-
-export { enTranslations, csTranslations };

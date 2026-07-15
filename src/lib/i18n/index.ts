@@ -1,14 +1,14 @@
-import { locales, defaultLocale, type Locale } from './config';
+import { Locale, locales, defaultLocale, getTranslation } from './config';
+import enTranslations from './en';
+import csTranslations from './cs';
 
-export const translations: Record<Locale, any> = {
-  en: (await import('./en')).default,
-  cs: (await import('./cs')).default,
+const translations = {
+  en: enTranslations,
+  cs: csTranslations,
 };
 
 export function getTranslation(locale: Locale) {
   return translations[locale] || translations[defaultLocale];
 }
 
-export function getNestedTranslation(obj: any, path: string): string {
-  return path.split('.').reduce((obj, key) => obj?.[key], obj) || path;
-}
+export { enTranslations, csTranslations };
