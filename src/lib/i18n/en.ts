@@ -225,7 +225,6 @@ export const en = {
       details: 'Your Details',
       confirm: 'Confirm',
     },
-    package',
     packageSelect: {
       title: 'Select Your Package',
     },
