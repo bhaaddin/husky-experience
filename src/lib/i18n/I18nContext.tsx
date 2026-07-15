@@ -1,11 +1,12 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect } from 'react';
+import { Locale, locales, defaultLocale, getTranslation } from './config';
 
-const I18nContext = createContext<{ locale: 'en' | 'cs'; setLocale: (l: 'en' | 'cs') => void; t: (p: string) => string } | undefined>(undefined);
+const I18nContext = createContext<{ locale: Locale; setLocale: (l: Locale) => void; t: (p: string) => string } | undefined>(undefined);
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<'en' | 'cs'>('en');
+  const [locale, setLocaleState] = useState<Locale>('en');
 
   useEffect(() => {
     const saved = localStorage.getItem('locale') as 'en' | 'cs' | null;
@@ -25,7 +26,10 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   }, [locale]);
 
   const t = (path: string): string => {
-    return path;
+    const translation = getTranslation(locale);
+    const localeObj = translation[locale];
+    if (!localeObj) return path;
+    return path.split('.').reduce((obj: any, key) => obj?.[key], localeObj) || path;
   };
 
   return (
@@ -36,7 +40,12 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useTranslation() {
-  const context = useContext(I18nContext);
+  const context = useContext(
+    (() => {
+      const ctx = require('./I18nContext').I18nContext;
+      return ctx;
+    })()
+  );
   if (!context) {
     throw new Error('useTranslation must be used within an I18nProvider');
   }
