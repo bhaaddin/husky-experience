@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { Locale, locales, defaultLocale } from './config';
 import { getTranslation } from './index';
 
@@ -34,7 +34,9 @@ export function I18nProvider({ children, initialLocale = defaultLocale }: { chil
 
   const t = (path: string): string => {
     const translation = getTranslation(locale);
-    return path.split('.').reduce((obj: any, key) => obj?.[key], translation[locale]) || path;
+    const localeObj = translation[locale];
+    if (!localeObj) return path;
+    return path.split('.').reduce((obj: any, key) => obj?.[key], localeObj) || path;
   };
 
   return (
@@ -45,7 +47,12 @@ export function I18nProvider({ children, initialLocale = defaultLocale }: { chil
 }
 
 export function useTranslation() {
-  const context = useContext(I18nContext);
+  const context = useContext(
+    (() => {
+      const ctx = require('./I18nContext').I18nContext;
+      return ctx;
+    })()
+  );
   if (!context) {
     throw new Error('useTranslation must be used within an I18nProvider');
   }
