@@ -36,12 +36,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useTranslation() {
-  const context = useContext(
-    (() => {
-      const ctx = require('./I18nContext').I18nContext;
-      return ctx;
-    })()
-  );
+  const context = useContext(I18nContext);
   if (!context) {
     throw new Error('useTranslation must be used within an I18nProvider');
   }
