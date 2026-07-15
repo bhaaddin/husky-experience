@@ -4,25 +4,19 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { Locale, locales, defaultLocale } from './config';
 import { getTranslation } from './index';
 
-interface I18nContextType {
-  locale: Locale;
-  setLocale: (locale: Locale) => void;
-  t: (path: string) => string;
-}
-
 const I18nContext = createContext<{ locale: Locale; setLocale: (l: Locale) => void; t: (p: string) => string } | undefined>(undefined);
 
-export function I18nProvider({ children, initialLocale = defaultLocale }: { children: React.ReactNode; initialLocale?: Locale }) {
-  const [locale, setLocaleState] = useState<Locale>(defaultLocale);
+export function I18nProvider({ children, initialLocale = 'en' }: { children: React.ReactNode; initialLocale?: 'en' | 'cs' }) {
+  const [locale, setLocaleState] = useState<'en' | 'cs'>('en');
 
   useEffect(() => {
-    const saved = localStorage.getItem('locale') as Locale | null;
-    if (saved && locales.includes(saved)) {
+    const saved = localStorage.getItem('locale') as 'en' | 'cs' | null;
+    if (saved && (saved === 'en' || saved === 'cs')) {
       setLocaleState(saved);
     }
   }, []);
 
-  const setLocale = (newLocale: Locale) => {
+  const setLocale = (newLocale: 'en' | 'cs') => {
     setLocaleState(newLocale);
     localStorage.setItem('locale', newLocale);
     document.documentElement.lang = newLocale;
@@ -33,7 +27,7 @@ export function I18nProvider({ children, initialLocale = defaultLocale }: { chil
   }, [locale]);
 
   const t = (path: string): string => {
-    const translation = getTranslation(locale);
+    const translation = getTranslation(locale as 'en' | 'cs');
     const localeObj = translation[locale];
     if (!localeObj) return path;
     return path.split('.').reduce((obj: any, key) => obj?.[key], localeObj) || path;
@@ -47,7 +41,12 @@ export function I18nProvider({ children, initialLocale = defaultLocale }: { chil
 }
 
 export function useTranslation() {
-  const context = useContext(I18nContext);
+  const context = useContext(
+    (() => {
+      const ctx = require('./I18nContext').I18nContext;
+      return ctx;
+    })()
+  );
   if (!context) {
     throw new Error('useTranslation must be used within an I18nProvider');
   }
