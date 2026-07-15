@@ -13,7 +13,7 @@ interface I18nContextType {
 const I18nContext = createContext<{ locale: Locale; setLocale: (l: Locale) => void; t: (p: string) => string } | undefined>(undefined);
 
 export function I18nProvider({ children, initialLocale = defaultLocale }: { children: React.ReactNode; initialLocale?: Locale }) {
-  const [locale, setLocaleState] = useState<Locale>(initialLocale);
+  const [locale, setLocaleState] = useState<Locale>(defaultLocale);
 
   useEffect(() => {
     const saved = localStorage.getItem('locale') as Locale | null;
@@ -47,12 +47,7 @@ export function I18nProvider({ children, initialLocale = defaultLocale }: { chil
 }
 
 export function useTranslation() {
-  const context = useContext(
-    (() => {
-      const ctx = require('./I18nContext').I18nContext;
-      return ctx;
-    })()
-  );
+  const context = useContext(I18nContext);
   if (!context) {
     throw new Error('useTranslation must be used within an I18nProvider');
   }
