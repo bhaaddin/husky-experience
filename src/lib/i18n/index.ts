@@ -1,4 +1,4 @@
-import { Locale, locales, defaultLocale, getTranslation } from './config';
+import { Locale, defaultLocale } from './config';
 import enTranslations from './en';
 import csTranslations from './cs';
 
