@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Menu, X, Phone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher'
 
 const navigation = [
   { name: 'Home', href: '/' },
@@ -12,6 +13,7 @@ const navigation = [
   { name: 'Gallery', href: '/gallery' },
   { name: 'Blog', href: '/blog' },
   { name: 'Contact', href: '/contact' },
+  { name: 'Booking', href: '/booking' },
 ]
 
 export function Header() {
@@ -51,6 +53,7 @@ export function Header() {
               <Phone className="h-4 w-4" />
               <span>(555) 123-4567</span>
             </div>
+            <LanguageSwitcher />
             <Button asChild size="sm">
               <Link href="/booking">Book Now</Link>
             </Button>
@@ -84,6 +87,9 @@ export function Header() {
                   Book Your Experience
                 </Link>
               </Button>
+            </div>
+            <div className="pt-4">
+              <LanguageSwitcher />
             </div>
           </div>
         </div>
